@@ -1,5 +1,16 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+
+function isExpoGo(): boolean {
+  return Constants.executionEnvironment === 'storeClient';
+}
+
+function canUseNotifications(): boolean {
+  if (Platform.OS === 'web') return false;
+  if (isExpoGo() && Platform.OS === 'android') return false;
+  return true;
+}
 
 export async function scheduleMedicationNotification(
   medicationId: string,
@@ -9,8 +20,8 @@ export async function scheduleMedicationNotification(
   reminderTime: string = '08:00',
   reminderMinutesBefore: number = 15
 ): Promise<string | null> {
-  if (Platform.OS === 'web') {
-    console.log('Notifications not supported on web');
+  if (!canUseNotifications()) {
+    console.log('Notifications not supported in this environment');
     return null;
   }
 
@@ -48,7 +59,7 @@ export async function scheduleMedicationNotification(
 }
 
 export async function cancelNotification(notificationId: string): Promise<void> {
-  if (Platform.OS === 'web') {
+  if (!canUseNotifications()) {
     return;
   }
 
@@ -74,7 +85,7 @@ export async function scheduleAllMedicationNotifications(
   }[],
   reminderMinutesBefore: number = 15
 ): Promise<void> {
-  if (Platform.OS === 'web') {
+  if (!canUseNotifications()) {
     return;
   }
 
