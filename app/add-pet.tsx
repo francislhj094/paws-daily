@@ -13,6 +13,11 @@ export default function AddPetScreen() {
   const { addPet, isAddingPet } = usePetMeds();
   const [name, setName] = useState('');
   const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
+  const [species, setSpecies] = useState('');
+  const [breed, setBreed] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [color, setColor] = useState('');
+  const [weight, setWeight] = useState('');
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -37,6 +42,11 @@ export default function AddPetScreen() {
       id: Date.now().toString(),
       name: name.trim(),
       photoUri,
+      species: species.trim() || undefined,
+      breed: breed.trim() || undefined,
+      birthDate: birthDate.trim() || undefined,
+      color: color.trim() || undefined,
+      weightHistory: weight ? [{ date: new Date().toISOString().split('T')[0], weight: parseFloat(weight) }] : undefined,
     };
 
     try {
@@ -83,6 +93,65 @@ export default function AddPetScreen() {
               placeholder="e.g., Buddy"
               placeholderTextColor="#9CA3AF"
               autoCapitalize="words"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Species</Text>
+            <TextInput
+              style={styles.input}
+              value={species}
+              onChangeText={setSpecies}
+              placeholder="e.g., Dog, Cat"
+              placeholderTextColor="#9CA3AF"
+              autoCapitalize="words"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Breed</Text>
+            <TextInput
+              style={styles.input}
+              value={breed}
+              onChangeText={setBreed}
+              placeholder="e.g., Golden Retriever"
+              placeholderTextColor="#9CA3AF"
+              autoCapitalize="words"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Birth Date</Text>
+            <TextInput
+              style={styles.input}
+              value={birthDate}
+              onChangeText={setBirthDate}
+              placeholder="YYYY-MM-DD"
+              placeholderTextColor="#9CA3AF"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Color</Text>
+            <TextInput
+              style={styles.input}
+              value={color}
+              onChangeText={setColor}
+              placeholder="e.g., Golden"
+              placeholderTextColor="#9CA3AF"
+              autoCapitalize="words"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Weight (kg)</Text>
+            <TextInput
+              style={styles.input}
+              value={weight}
+              onChangeText={setWeight}
+              placeholder="e.g., 25"
+              placeholderTextColor="#9CA3AF"
+              keyboardType="decimal-pad"
             />
           </View>
         </View>
