@@ -4,30 +4,20 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PetMedsProvider } from "@/providers/PetMedsProvider";
+import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
-import { Platform } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
-const isExpoGo = Constants.executionEnvironment === 'storeClient';
-const canUseNotifications = Platform.OS !== 'web' && !(isExpoGo && Platform.OS === 'android');
-
-if (canUseNotifications) {
-  import('expo-notifications').then((Notifications) => {
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-        shouldShowBanner: true,
-        shouldShowList: true,
-      }),
-    });
-  }).catch(() => {
-    console.log('Notifications not available');
-  });
-}
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 const queryClient = new QueryClient();
 
@@ -90,20 +80,11 @@ export default function RootLayout() {
 
     initialize();
     
-    if (canUseNotifications) {
-      const requestPermissions = async () => {
-        try {
-          const Notifications = await import('expo-notifications');
-          const { status } = await Notifications.requestPermissionsAsync();
-          console.log('Notification permission status:', status);
-        } catch (error) {
-          console.log('Could not request notification permissions:', error);
-        }
-      };
-      requestPermissions();
-    } else {
-      console.log('Notifications disabled: Running in Expo Go on Android');
-    }
+    const requestPermissions = async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      console.log('Notification permission status:', status);
+    };
+    requestPermissions();
   }, []);
 
   if (!isReady) {

@@ -1,15 +1,5 @@
 import { Platform } from 'react-native';
-import Constants from 'expo-constants';
-
-function isExpoGo(): boolean {
-  return Constants.executionEnvironment === 'storeClient';
-}
-
-function canUseNotifications(): boolean {
-  if (Platform.OS === 'web') return false;
-  if (isExpoGo() && Platform.OS === 'android') return false;
-  return true;
-}
+import * as Notifications from 'expo-notifications';
 
 export async function scheduleMedicationNotification(
   medicationId: string,
@@ -19,14 +9,12 @@ export async function scheduleMedicationNotification(
   reminderTime: string = '08:00',
   reminderMinutesBefore: number = 15
 ): Promise<string | null> {
-  if (!canUseNotifications()) {
-    console.log('Notifications not supported in this environment');
+  if (Platform.OS === 'web') {
+    console.log('Notifications not supported on web');
     return null;
   }
 
   try {
-    const Notifications = await import('expo-notifications');
-    
     const [hours, minutes] = reminderTime.split(':').map(Number);
     const dueDate = new Date(nextDueDate);
     dueDate.setHours(hours, minutes, 0, 0);
@@ -60,12 +48,11 @@ export async function scheduleMedicationNotification(
 }
 
 export async function cancelNotification(notificationId: string): Promise<void> {
-  if (!canUseNotifications()) {
+  if (Platform.OS === 'web') {
     return;
   }
 
   try {
-    const Notifications = await import('expo-notifications');
     await Notifications.cancelScheduledNotificationAsync(notificationId);
     console.log(`Cancelled notification ${notificationId}`);
   } catch (error) {
@@ -87,13 +74,11 @@ export async function scheduleAllMedicationNotifications(
   }[],
   reminderMinutesBefore: number = 15
 ): Promise<void> {
-  if (!canUseNotifications()) {
-    console.log('Skipping notification scheduling in Expo Go');
+  if (Platform.OS === 'web') {
     return;
   }
 
   try {
-    const Notifications = await import('expo-notifications');
     await Notifications.cancelAllScheduledNotificationsAsync();
 
     for (const med of medications) {
