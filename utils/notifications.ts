@@ -1,5 +1,4 @@
 import { Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 
 function isExpoGo(): boolean {
@@ -26,6 +25,8 @@ export async function scheduleMedicationNotification(
   }
 
   try {
+    const Notifications = await import('expo-notifications');
+    
     const [hours, minutes] = reminderTime.split(':').map(Number);
     const dueDate = new Date(nextDueDate);
     dueDate.setHours(hours, minutes, 0, 0);
@@ -64,6 +65,7 @@ export async function cancelNotification(notificationId: string): Promise<void> 
   }
 
   try {
+    const Notifications = await import('expo-notifications');
     await Notifications.cancelScheduledNotificationAsync(notificationId);
     console.log(`Cancelled notification ${notificationId}`);
   } catch (error) {
@@ -86,10 +88,12 @@ export async function scheduleAllMedicationNotifications(
   reminderMinutesBefore: number = 15
 ): Promise<void> {
   if (!canUseNotifications()) {
+    console.log('Skipping notification scheduling in Expo Go');
     return;
   }
 
   try {
+    const Notifications = await import('expo-notifications');
     await Notifications.cancelAllScheduledNotificationsAsync();
 
     for (const med of medications) {
