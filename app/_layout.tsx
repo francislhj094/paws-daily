@@ -1,11 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack, router } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PetMedsProvider } from "@/providers/PetMedsProvider";
 import * as Notifications from 'expo-notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,7 +23,6 @@ const queryClient = new QueryClient();
 function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerBackTitle: "Back" }}>
-      <Stack.Screen name="onboarding" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen 
         name="add-pet" 
@@ -46,39 +44,13 @@ function RootLayoutNav() {
           title: "Pet Details"
         }} 
       />
-      <Stack.Screen 
-        name="medication/[id]" 
-        options={{ 
-          title: "Medication Details"
-        }} 
-      />
     </Stack>
   );
 }
 
 export default function RootLayout() {
-  const [isReady, setIsReady] = useState(false);
-
   useEffect(() => {
-    const initialize = async () => {
-      try {
-        const onboardingCompleted = await AsyncStorage.getItem('pet_meds_onboarding_completed');
-        
-        if (onboardingCompleted) {
-          router.replace('/(tabs)');
-        } else {
-          router.replace('/onboarding');
-        }
-      } catch (error) {
-        console.error('Error checking onboarding status:', error);
-        router.replace('/onboarding');
-      } finally {
-        setIsReady(true);
-        SplashScreen.hideAsync();
-      }
-    };
-
-    initialize();
+    SplashScreen.hideAsync();
     
     const requestPermissions = async () => {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -86,10 +58,6 @@ export default function RootLayout() {
     };
     requestPermissions();
   }, []);
-
-  if (!isReady) {
-    return null;
-  }
 
   return (
     <QueryClientProvider client={queryClient}>
