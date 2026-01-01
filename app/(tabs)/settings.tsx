@@ -1,13 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Stack } from 'expo-router';
-import { RotateCcw, Info, ChevronRight } from 'lucide-react-native';
+import { Stack, router } from 'expo-router';
+import { RotateCcw, Info, ChevronRight, LogOut } from 'lucide-react-native';
 import { useCareDaily } from '@/providers/CareDailyProvider';
+import { useAuth } from '@/providers/AuthProvider';
+import { Colors } from '@/constants/colors';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { pets, tasks, resetTodayTasks } = useCareDaily();
+  const { logout, user } = useAuth();
 
   const handleResetTasks = () => {
     Alert.alert(
@@ -35,6 +38,24 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleLogout = () => {
+    Alert.alert(
+      'Log Out',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Log Out',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+            router.replace('/login' as any);
+          },
+        },
+      ]
+    );
+  };
+
   const todayTasks = tasks.filter(task => {
     const today = new Date().toISOString().split('T')[0];
     return task.createdDate === today;
@@ -50,6 +71,28 @@ export default function SettingsScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Account</Text>
+            
+            <View style={styles.settingItem}>
+              <View style={styles.settingLeft}>
+                <Info size={22} color={Colors.primaryAction} />
+                <Text style={styles.settingLabel}>{user?.email}</Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={styles.settingItem}
+              onPress={handleLogout}
+            >
+              <View style={styles.settingLeft}>
+                <LogOut size={22} color="#EF4444" />
+                <Text style={[styles.settingLabel, { color: '#EF4444' }]}>Log Out</Text>
+              </View>
+              <ChevronRight size={22} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.section}>
             <Text style={styles.sectionTitle}>Quick Actions</Text>
             
             <TouchableOpacity
@@ -57,7 +100,7 @@ export default function SettingsScreen() {
               onPress={handleResetTasks}
             >
               <View style={styles.settingLeft}>
-                <RotateCcw size={22} color="#3B82F6" />
+                <RotateCcw size={22} color={Colors.primaryAction} />
                 <Text style={styles.settingLabel}>Reset Today&apos;s Tasks</Text>
               </View>
               <ChevronRight size={22} color="#9CA3AF" />
@@ -72,7 +115,7 @@ export default function SettingsScreen() {
               onPress={handleAbout}
             >
               <View style={styles.settingLeft}>
-                <Info size={22} color="#3B82F6" />
+                <Info size={22} color={Colors.primaryAction} />
                 <Text style={styles.settingLabel}>About & Help</Text>
               </View>
               <ChevronRight size={22} color="#9CA3AF" />
@@ -105,7 +148,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF9F6',
+    backgroundColor: Colors.primaryBackground,
   },
   content: {
     flex: 1,
@@ -119,18 +162,18 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1F2937',
+    color: Colors.textDark,
     marginBottom: 12,
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     borderRadius: 12,
     padding: 18,
     marginBottom: 8,
-    shadowColor: '#000',
+    shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -145,7 +188,7 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#1F2937',
+    color: Colors.textDark,
   },
   stats: {
     marginTop: 12,
@@ -153,7 +196,7 @@ const styles = StyleSheet.create({
   statsTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1F2937',
+    color: Colors.textDark,
     marginBottom: 12,
   },
   statsGrid: {
@@ -162,11 +205,11 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     borderRadius: 12,
     padding: 20,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -175,12 +218,12 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#3B82F6',
+    color: Colors.primaryAction,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 14,
-    color: '#6B7280',
+    color: Colors.textSecondary,
     fontWeight: '500',
   },
 });

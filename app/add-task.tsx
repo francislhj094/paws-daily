@@ -5,6 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useCareDaily } from '@/providers/CareDailyProvider';
 import { CareTask, TimeSlot, TaskType } from '@/types';
 import * as Haptics from 'expo-haptics';
+import { Colors } from '@/constants/colors';
 
 const TASK_PRESETS: { type: TaskType; name: string; emoji: string }[] = [
   { type: 'medication', name: 'Give medication', emoji: '💊' },
@@ -224,7 +225,7 @@ export default function AddTaskScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF9F6',
+    backgroundColor: Colors.primaryBackground,
   },
   content: {
     flex: 1,
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1F2937',
+    color: Colors.textDark,
     marginBottom: 16,
   },
   presetsGrid: {
@@ -247,17 +248,17 @@ const styles = StyleSheet.create({
   presetButton: {
     flex: 1,
     minWidth: '30%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.border,
     borderRadius: 16,
     padding: 16,
     alignItems: 'center',
     gap: 8,
   },
   presetButtonSelected: {
-    borderColor: '#3B82F6',
-    backgroundColor: '#EFF6FF',
+    borderColor: Colors.primaryAction,
+    backgroundColor: Colors.primaryBackground,
   },
   presetEmoji: {
     fontSize: 32,
@@ -265,11 +266,11 @@ const styles = StyleSheet.create({
   presetText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: Colors.textSecondary,
     textAlign: 'center',
   },
   presetTextSelected: {
-    color: '#3B82F6',
+    color: Colors.primaryAction,
   },
   form: {
     gap: 24,
@@ -281,17 +282,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#1F2937',
+    color: Colors.textDark,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.border,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
     fontSize: 17,
-    color: '#1F2937',
+    color: Colors.textDark,
   },
   textArea: {
     minHeight: 100,
@@ -309,24 +310,24 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   petOption: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.border,
     borderRadius: 12,
     paddingHorizontal: 20,
     paddingVertical: 14,
   },
   petOptionSelected: {
-    borderColor: '#3B82F6',
-    backgroundColor: '#EFF6FF',
+    borderColor: Colors.primaryAction,
+    backgroundColor: Colors.primaryBackground,
   },
   petOptionText: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#6B7280',
+    color: Colors.textSecondary,
   },
   petOptionTextSelected: {
-    color: '#3B82F6',
+    color: Colors.primaryAction,
   },
   timeSlotSelector: {
     flexDirection: 'row',
@@ -336,24 +337,24 @@ const styles = StyleSheet.create({
   timeSlotButton: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.border,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
   },
   timeSlotButtonSelected: {
-    borderColor: '#3B82F6',
-    backgroundColor: '#3B82F6',
+    borderColor: Colors.primaryAction,
+    backgroundColor: Colors.primaryAction,
   },
   timeSlotButtonText: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#6B7280',
+    color: Colors.textSecondary,
   },
   timeSlotButtonTextSelected: {
-    color: '#FFFFFF',
+    color: Colors.textLight,
   },
   toggleDetailsButton: {
     paddingVertical: 12,
@@ -361,7 +362,7 @@ const styles = StyleSheet.create({
   toggleDetailsText: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#3B82F6',
+    color: Colors.primaryAction,
     textAlign: 'center',
   },
   actions: {
@@ -372,9 +373,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 18,
     borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.border,
     alignItems: 'center',
     minHeight: 56,
     justifyContent: 'center',
@@ -382,23 +383,23 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#6B7280',
+    color: Colors.textSecondary,
   },
   saveButton: {
     flex: 1,
     paddingVertical: 18,
     borderRadius: 12,
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.primaryAction,
     alignItems: 'center',
     minHeight: 56,
     justifyContent: 'center',
   },
   saveButtonDisabled: {
-    backgroundColor: '#9CA3AF',
+    backgroundColor: Colors.textSecondary,
   },
   saveButtonText: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.textLight,
   },
 });

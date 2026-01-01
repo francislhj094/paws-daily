@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
 import { useCareDaily } from '@/providers/CareDailyProvider';
 import { Pet } from '@/types';
+import { Colors } from '@/constants/colors';
 
 
 export default function AddPetScreen() {
@@ -117,7 +118,7 @@ export default function AddPetScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: Colors.primaryBackground,
   },
   content: {
     flex: 1,
@@ -138,14 +139,14 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
   photoPlaceholderText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: Colors.textSecondary,
     fontWeight: '600',
   },
   form: {
@@ -158,17 +159,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
+    color: Colors.textDark,
   },
   input: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    backgroundColor: Colors.cardBackground,
+    borderWidth: 2,
+    borderColor: Colors.border,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: '#1F2937',
+    color: Colors.textDark,
   },
   actions: {
     flexDirection: 'row',
@@ -178,21 +179,21 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 16,
     borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    backgroundColor: Colors.cardBackground,
+    borderWidth: 2,
+    borderColor: Colors.border,
     alignItems: 'center',
   },
   cancelButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6B7280',
+    color: Colors.textSecondary,
   },
   saveButton: {
     flex: 1,
     paddingVertical: 16,
     borderRadius: 12,
-    backgroundColor: '#FF6B6B',
+    backgroundColor: Colors.primaryAction,
     alignItems: 'center',
   },
   saveButtonDisabled: {
@@ -201,7 +202,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: Colors.textLight,
   },
 
 });

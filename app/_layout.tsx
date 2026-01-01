@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { CareDailyProvider } from "@/providers/CareDailyProvider";
+import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { trpc, trpcClient } from "@/lib/trpc";
@@ -26,26 +27,33 @@ function RootLayoutNav() {
   const [isReady, setIsReady] = useState(false);
   const router = useRouter();
   const segments = useSegments();
+  const { isAuthenticated, isReady: authReady } = useAuth();
 
   useEffect(() => {
     const checkOnboarding = async () => {
       const hasSeenOnboarding = await AsyncStorage.getItem('hasSeenOnboarding');
       setIsReady(true);
       
-      if (!hasSeenOnboarding && segments[0] !== 'onboarding') {
+      if (!authReady) return;
+      
+      if (!isAuthenticated && segments[0] !== 'login' && segments[0] !== 'signup') {
+        router.replace('/login' as any);
+      } else if (isAuthenticated && !hasSeenOnboarding && segments[0] !== 'onboarding') {
         router.replace('/onboarding');
       }
     };
     
     checkOnboarding();
-  }, [router, segments]);
+  }, [router, segments, isAuthenticated, authReady]);
 
-  if (!isReady) {
+  if (!isReady || !authReady) {
     return null;
   }
 
   return (
     <Stack screenOptions={{ headerBackTitle: "Back" }}>
+      <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="signup" options={{ headerShown: false }} />
       <Stack.Screen name="onboarding" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen 
@@ -105,11 +113,13 @@ export default function RootLayout() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <CareDailyProvider>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <RootLayoutNav />
-          </GestureHandlerRootView>
-        </CareDailyProvider>
+        <AuthProvider>
+          <CareDailyProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <RootLayoutNav />
+            </GestureHandlerRootView>
+          </CareDailyProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </trpc.Provider>
   );

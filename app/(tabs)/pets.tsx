@@ -6,6 +6,7 @@ import { Plus, ChevronRight, Trash2 } from 'lucide-react-native';
 import { useCareDaily } from '@/providers/CareDailyProvider';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { Colors } from '@/constants/colors';
 
 export default function PetsScreen() {
   const insets = useSafeAreaInsets();
@@ -42,7 +43,7 @@ export default function PetsScreen() {
           style={styles.addButton}
           onPress={() => router.push('/add-pet')}
         >
-          <Plus size={28} color="#3B82F6" strokeWidth={2.5} />
+          <Plus size={28} color={Colors.primaryAction} strokeWidth={2.5} />
         </TouchableOpacity>
       </View>
 
@@ -112,14 +113,14 @@ export default function PetsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF9F6',
+    backgroundColor: Colors.primaryBackground,
   },
   header: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     paddingHorizontal: 24,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.border,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -127,19 +128,19 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 34,
     fontWeight: '800',
-    color: '#1F2937',
+    color: Colors.primaryAction,
     marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 17,
-    color: '#6B7280',
+    color: Colors.textSecondary,
     fontWeight: '500',
   },
   addButton: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#EFF6FF',
+    backgroundColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -151,11 +152,11 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   petCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     borderRadius: 16,
     marginBottom: 12,
     overflow: 'hidden',
-    shadowColor: '#000',
+    shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
@@ -176,14 +177,14 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.primaryAction,
     alignItems: 'center',
     justifyContent: 'center',
   },
   petCardPhotoPlaceholderText: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.textLight,
   },
   petCardInfo: {
     flex: 1,
@@ -192,11 +193,11 @@ const styles = StyleSheet.create({
   petCardName: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1F2937',
+    color: Colors.textDark,
   },
   petCardAction: {
     fontSize: 15,
-    color: '#6B7280',
+    color: Colors.textSecondary,
   },
   petCardActions: {
     flexDirection: 'row',
@@ -228,19 +229,19 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1F2937',
+    color: Colors.textDark,
     marginBottom: 12,
   },
   emptyText: {
     fontSize: 17,
-    color: '#6B7280',
+    color: Colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: 40,
     marginBottom: 24,
     lineHeight: 24,
   },
   emptyButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.primaryAction,
     paddingHorizontal: 28,
     paddingVertical: 16,
     borderRadius: 12,
@@ -248,6 +249,6 @@ const styles = StyleSheet.create({
   emptyButtonText: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.textLight,
   },
 });

@@ -7,6 +7,7 @@ import { useCareDaily, useTodayTasks } from '@/providers/CareDailyProvider';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { CareTask, TimeSlot, TaskType } from '@/types';
+import { Colors } from '@/constants/colors';
 
 const TASK_TYPE_EMOJI: Record<TaskType, string> = {
   medication: '💊',
@@ -17,10 +18,10 @@ const TASK_TYPE_EMOJI: Record<TaskType, string> = {
 };
 
 const TIME_SLOT_COLORS: Record<TimeSlot, string> = {
-  Morning: '#F59E0B',
-  Noon: '#3B82F6',
-  Evening: '#8B5CF6',
-  Bedtime: '#6366F1',
+  Morning: '#388E3C',
+  Noon: '#66BB6A',
+  Evening: '#43A047',
+  Bedtime: '#2E7D32',
 };
 
 export default function TodaysCareScreen() {
@@ -134,7 +135,7 @@ export default function TodaysCareScreen() {
                       <Text style={styles.completedTaskName}>{task.taskName}</Text>
                       <Text style={styles.completedTaskPet}>{task.petName}</Text>
                     </View>
-                    <CheckCircle2 size={28} color="#34C759" fill="#34C759" />
+                    <CheckCircle2 size={28} color={Colors.primaryAction} fill={Colors.primaryAction} />
                   </View>
                 ))}
               </View>
@@ -147,7 +148,7 @@ export default function TodaysCareScreen() {
         style={[styles.fab, { bottom: insets.bottom + 20 }]}
         onPress={() => router.push('/add-task')}
       >
-        <Plus size={32} color="#FFFFFF" strokeWidth={3} />
+        <Plus size={32} color={Colors.textLight} strokeWidth={3} />
       </TouchableOpacity>
     </View>
   );
@@ -181,7 +182,7 @@ function TaskCard({ task, onMarkComplete, isMarking }: TaskCardProps) {
           disabled={isMarking}
         >
           {isMarking ? (
-            <ActivityIndicator size="large" color="#34C759" />
+            <ActivityIndicator size="large" color={Colors.primaryAction} />
           ) : (
             <View style={styles.checkCircle}>
               <View style={styles.checkCircleInner} />
@@ -196,24 +197,24 @@ function TaskCard({ task, onMarkComplete, isMarking }: TaskCardProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF9F6',
+    backgroundColor: Colors.primaryBackground,
   },
   header: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     paddingHorizontal: 24,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.border,
   },
   headerTitle: {
     fontSize: 34,
     fontWeight: '800',
-    color: '#1F2937',
+    color: Colors.primaryAction,
     marginBottom: 4,
   },
   headerDate: {
     fontSize: 17,
-    color: '#6B7280',
+    color: Colors.textSecondary,
     fontWeight: '500',
   },
   content: {
@@ -241,26 +242,26 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.primaryAction,
     alignItems: 'center',
     justifyContent: 'center',
   },
   petPhotoPlaceholderText: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.textLight,
   },
   petName: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1F2937',
+    color: Colors.textDark,
   },
   taskCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.cardBackground,
     borderRadius: 16,
     padding: 20,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
@@ -281,7 +282,7 @@ const styles = StyleSheet.create({
   taskName: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1F2937',
+    color: Colors.textDark,
   },
   timeSlotBadge: {
     alignSelf: 'flex-start',
@@ -292,11 +293,11 @@ const styles = StyleSheet.create({
   timeSlotText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.textLight,
   },
   taskDetails: {
     fontSize: 15,
-    color: '#6B7280',
+    color: Colors.textSecondary,
   },
   checkButton: {
     minWidth: 56,
@@ -308,10 +309,10 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#34C759',
+    backgroundColor: Colors.primaryAction,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#34C759',
+    shadowColor: Colors.primaryAction,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.textLight,
   },
   completedSection: {
     marginTop: 16,
@@ -351,12 +352,12 @@ const styles = StyleSheet.create({
   completedTaskName: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#6B7280',
+    color: Colors.textSecondary,
     textDecorationLine: 'line-through',
   },
   completedTaskPet: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: Colors.textSecondary,
   },
   emptyState: {
     alignItems: 'center',
@@ -370,12 +371,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1F2937',
+    color: Colors.textDark,
     marginBottom: 12,
   },
   emptyText: {
     fontSize: 17,
-    color: '#6B7280',
+    color: Colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: 40,
     lineHeight: 24,
@@ -386,10 +387,10 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.primaryAction,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#3B82F6',
+    shadowColor: Colors.primaryAction,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
