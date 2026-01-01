@@ -3,7 +3,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { PetMedsProvider } from "@/providers/PetMedsProvider";
+import { CareDailyProvider } from "@/providers/CareDailyProvider";
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { trpc, trpcClient } from "@/lib/trpc";
@@ -56,10 +56,10 @@ function RootLayoutNav() {
         }} 
       />
       <Stack.Screen 
-        name="add-medication" 
+        name="add-task" 
         options={{ 
           presentation: "modal",
-          title: "Add Medication"
+          title: "Add Care Task"
         }} 
       />
       <Stack.Screen 
@@ -105,11 +105,11 @@ export default function RootLayout() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <PetMedsProvider>
+        <CareDailyProvider>
           <GestureHandlerRootView style={{ flex: 1 }}>
             <RootLayoutNav />
           </GestureHandlerRootView>
-        </PetMedsProvider>
+        </CareDailyProvider>
       </QueryClientProvider>
     </trpc.Provider>
   );

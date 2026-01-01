@@ -1,13 +1,19 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import { CareTask, TimeSlot } from '@/types';
 
-export async function scheduleMedicationNotification(
-  medicationId: string,
-  medicationName: string,
+const TIME_SLOT_HOURS: Record<TimeSlot, number> = {
+  Morning: 8,
+  Noon: 12,
+  Evening: 18,
+  Bedtime: 21,
+};
+
+export async function scheduleTaskNotification(
+  taskId: string,
+  taskName: string,
   petName: string,
-  nextDueDate: string,
-  reminderTime: string = '08:00',
-  dosage?: string
+  timeSlot: TimeSlot
 ): Promise<string | null> {
   if (Platform.OS === 'web') {
     console.log('Notifications not supported on web');
@@ -15,26 +21,20 @@ export async function scheduleMedicationNotification(
   }
 
   try {
-    const [hours, minutes] = reminderTime.split(':').map(Number);
-    const dueDate = new Date(nextDueDate);
-    dueDate.setHours(hours, minutes, 0, 0);
+    const hours = TIME_SLOT_HOURS[timeSlot];
+    const now = new Date();
+    const notificationTime = new Date();
+    notificationTime.setHours(hours, 0, 0, 0);
     
-    const notificationTime = new Date(dueDate.getTime() - 15 * 60 * 1000);
-
-    if (notificationTime.getTime() <= Date.now()) {
-      console.log('Scheduled time is in the past, skipping notification');
-      return null;
+    if (notificationTime.getTime() <= now.getTime()) {
+      notificationTime.setDate(notificationTime.getDate() + 1);
     }
-
-    const bodyText = dosage 
-      ? `${medicationName} (${dosage}) is due in 15 minutes`
-      : `${medicationName} is due in 15 minutes`;
 
     const notificationId = await Notifications.scheduleNotificationAsync({
       content: {
-        title: `${petName}'s medication reminder`,
-        body: bodyText,
-        data: { medicationId },
+        title: `Time for ${petName}'s care!`,
+        body: taskName,
+        data: { taskId, timeSlot },
         sound: true,
       },
       trigger: {
@@ -43,7 +43,7 @@ export async function scheduleMedicationNotification(
       },
     });
 
-    console.log(`Scheduled notification ${notificationId} for ${medicationName} at ${notificationTime.toISOString()}`);
+    console.log(`Scheduled notification ${notificationId} for ${taskName} at ${timeSlot}`);
     return notificationId;
   } catch (error) {
     console.error('Error scheduling notification:', error);
@@ -64,19 +64,9 @@ export async function cancelNotification(notificationId: string): Promise<void> 
   }
 }
 
-export async function scheduleAllMedicationNotifications(
-  medications: {
-    id: string;
-    petId: string;
-    name: string;
-    nextDue: string;
-    reminderTime?: string;
-    dosage?: string;
-  }[],
-  pets: {
-    id: string;
-    name: string;
-  }[]
+export async function scheduleTaskNotifications(
+  tasks: CareTask[],
+  pets: { id: string; name: string }[]
 ): Promise<void> {
   if (Platform.OS === 'web') {
     return;
@@ -85,17 +75,21 @@ export async function scheduleAllMedicationNotifications(
   try {
     await Notifications.cancelAllScheduledNotificationsAsync();
 
-    for (const med of medications) {
-      const pet = pets.find(p => p.id === med.petId);
+    const scheduledTimeSlots = new Set<string>();
+
+    for (const task of tasks) {
+      const pet = pets.find(p => p.id === task.petId);
       if (pet) {
-        await scheduleMedicationNotification(
-          med.id,
-          med.name,
-          pet.name,
-          med.nextDue,
-          med.reminderTime,
-          med.dosage
-        );
+        const key = `${pet.id}-${task.timeSlot}`;
+        if (!scheduledTimeSlots.has(key)) {
+          await scheduleTaskNotification(
+            task.id,
+            task.taskName,
+            pet.name,
+            task.timeSlot
+          );
+          scheduledTimeSlots.add(key);
+        }
       }
     }
   } catch (error) {

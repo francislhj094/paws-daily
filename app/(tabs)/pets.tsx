@@ -1,37 +1,50 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Plus, ChevronRight } from 'lucide-react-native';
-import { usePetMeds, usePetMedications } from '@/providers/PetMedsProvider';
+import { Plus, ChevronRight, Trash2 } from 'lucide-react-native';
+import { useCareDaily } from '@/providers/CareDailyProvider';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 
 export default function PetsScreen() {
   const insets = useSafeAreaInsets();
-  const { pets } = usePetMeds();
+  const { pets, deletePet } = useCareDaily();
+
+  const handleDeletePet = (petId: string, petName: string) => {
+    Alert.alert(
+      'Delete Pet',
+      `Are you sure you want to delete ${petName}? This will also delete all their care tasks.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            await deletePet(petId);
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#FF6B6B', '#FF8E8E']}
-        style={[styles.header, { paddingTop: insets.top + 16 }]}
-      >
-        <View style={styles.headerContent}>
-          <View>
-            <Text style={styles.headerTitle}>My Pets</Text>
-            <Text style={styles.headerSubtitle}>
-              {pets.length} {pets.length === 1 ? 'pet' : 'pets'}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => router.push('/add-pet')}
-          >
-            <Plus size={24} color="#FF6B6B" />
-          </TouchableOpacity>
+      <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
+        <View>
+          <Text style={styles.headerTitle}>My Pets</Text>
+          <Text style={styles.headerSubtitle}>
+            {pets.length} {pets.length === 1 ? 'pet' : 'pets'}
+          </Text>
         </View>
-      </LinearGradient>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => router.push('/add-pet')}
+        >
+          <Plus size={28} color="#3B82F6" strokeWidth={2.5} />
+        </TouchableOpacity>
+      </View>
 
       <ScrollView 
         style={styles.content}
@@ -43,7 +56,7 @@ export default function PetsScreen() {
             <Text style={styles.emptyIcon}>🐾</Text>
             <Text style={styles.emptyTitle}>No pets yet</Text>
             <Text style={styles.emptyText}>
-              Add your first pet to start tracking their medications
+              Add your first pet to start tracking their daily care
             </Text>
             <TouchableOpacity
               style={styles.emptyButton}
@@ -53,86 +66,82 @@ export default function PetsScreen() {
             </TouchableOpacity>
           </View>
         ) : (
-          pets.map(pet => <PetCard key={pet.id} pet={pet} />)
+          pets.map(pet => (
+            <View key={pet.id} style={styles.petCard}>
+              <TouchableOpacity
+                style={styles.petCardContent}
+                onPress={() => router.push(`/add-task?petId=${pet.id}`)}
+              >
+                {pet.photoUri ? (
+                  <Image
+                    source={{ uri: pet.photoUri }}
+                    style={styles.petCardPhoto}
+                    contentFit="cover"
+                  />
+                ) : (
+                  <View style={styles.petCardPhotoPlaceholder}>
+                    <Text style={styles.petCardPhotoPlaceholderText}>
+                      {pet.name.charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                )}
+                <View style={styles.petCardInfo}>
+                  <Text style={styles.petCardName}>{pet.name}</Text>
+                  <Text style={styles.petCardAction}>Tap to add task</Text>
+                </View>
+                <ChevronRight size={24} color="#9CA3AF" />
+              </TouchableOpacity>
+              
+              <View style={styles.petCardActions}>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDeletePet(pet.id, pet.name)}
+                >
+                  <Trash2 size={18} color="#EF4444" />
+                  <Text style={styles.deleteButtonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))
         )}
       </ScrollView>
     </View>
   );
 }
 
-function PetCard({ pet }: { pet: any }) {
-  const medications = usePetMedications(pet.id);
-
-  return (
-    <TouchableOpacity
-      style={styles.petCard}
-      onPress={() => router.push(`/pet/${pet.id}`)}
-    >
-      <View style={styles.petCardContent}>
-        {pet.photoUri ? (
-          <Image
-            source={{ uri: pet.photoUri }}
-            style={styles.petCardPhoto}
-            contentFit="cover"
-          />
-        ) : (
-          <View style={styles.petCardPhotoPlaceholder}>
-            <Text style={styles.petCardPhotoPlaceholderText}>
-              {pet.name.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-        )}
-        <View style={styles.petCardInfo}>
-          <Text style={styles.petCardName}>{pet.name}</Text>
-          <Text style={styles.petCardMeds}>
-            {medications.length} {medications.length === 1 ? 'medication' : 'medications'}
-          </Text>
-        </View>
-        <ChevronRight size={24} color="#9CA3AF" />
-      </View>
-    </TouchableOpacity>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FAF9F6',
   },
   header: {
-    paddingHorizontal: 20,
-    paddingBottom: 24,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-  },
-  headerContent: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 24,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontSize: 34,
+    fontWeight: '800',
+    color: '#1F2937',
     marginBottom: 4,
   },
   headerSubtitle: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    opacity: 0.95,
+    fontSize: 17,
+    color: '#6B7280',
+    fontWeight: '500',
   },
   addButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FFFFFF',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#EFF6FF',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
   },
   content: {
     flex: 1,
@@ -144,34 +153,35 @@ const styles = StyleSheet.create({
   petCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    padding: 16,
     marginBottom: 12,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
   },
   petCardContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    padding: 16,
+    gap: 16,
   },
   petCardPhoto: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
   },
   petCardPhotoPlaceholder: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#FF6B6B',
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#3B82F6',
     alignItems: 'center',
     justifyContent: 'center',
   },
   petCardPhotoPlaceholderText: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
     color: '#FFFFFF',
   },
@@ -180,13 +190,31 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   petCardName: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '700',
     color: '#1F2937',
   },
-  petCardMeds: {
-    fontSize: 14,
+  petCardAction: {
+    fontSize: 15,
     color: '#6B7280',
+  },
+  petCardActions: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  deleteButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    gap: 8,
+  },
+  deleteButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#EF4444',
   },
   emptyState: {
     alignItems: 'center',
@@ -194,31 +222,32 @@ const styles = StyleSheet.create({
     paddingVertical: 80,
   },
   emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
+    fontSize: 72,
+    marginBottom: 20,
   },
   emptyTitle: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 28,
+    fontWeight: '800',
     color: '#1F2937',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#6B7280',
     textAlign: 'center',
     paddingHorizontal: 40,
     marginBottom: 24,
+    lineHeight: 24,
   },
   emptyButton: {
-    backgroundColor: '#FF6B6B',
-    paddingHorizontal: 24,
-    paddingVertical: 14,
+    backgroundColor: '#3B82F6',
+    paddingHorizontal: 28,
+    paddingVertical: 16,
     borderRadius: 12,
   },
   emptyButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#FFFFFF',
   },
 });

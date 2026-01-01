@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Pet Meds Tracker",
-    "slug": "pet-meds-tracker",
+    "name": "Paws Daily",
+    "slug": "paws-daily",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.rork.pet-meds-tracker",
+      "bundleIdentifier": "launchfast.pawsdaily",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos",
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera",
@@ -27,7 +27,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "app.rork.pet_meds_tracker",
+      "package": "launchfast.pawsdaily",
       "permissions": [
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.SCHEDULE_EXACT_ALARM",

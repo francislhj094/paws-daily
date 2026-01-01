@@ -5,21 +5,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
-import { usePetMeds } from '@/providers/PetMedsProvider';
+import { useCareDaily } from '@/providers/CareDailyProvider';
 import { Pet } from '@/types';
-import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 export default function AddPetScreen() {
   const insets = useSafeAreaInsets();
-  const { addPet, isAddingPet } = usePetMeds();
+  const { addPet, isAddingPet } = useCareDaily();
   const [name, setName] = useState('');
   const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
-  const [species, setSpecies] = useState('');
-  const [breed, setBreed] = useState('');
-  const [birthDate, setBirthDate] = useState<Date | undefined>();
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [weight, setWeight] = useState('');
-  const [color, setColor] = useState('');
+
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -44,15 +39,6 @@ export default function AddPetScreen() {
       id: Date.now().toString(),
       name: name.trim(),
       photoUri,
-      species: species.trim() || undefined,
-      breed: breed.trim() || undefined,
-      birthDate: birthDate?.toISOString().split('T')[0],
-      weight: weight ? parseFloat(weight) : undefined,
-      color: color.trim() || undefined,
-      weightHistory: weight ? [{
-        date: new Date().toISOString().split('T')[0],
-        weight: parseFloat(weight)
-      }] : [],
     };
 
     try {
@@ -102,80 +88,7 @@ export default function AddPetScreen() {
             />
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Species</Text>
-            <TextInput
-              style={styles.input}
-              value={species}
-              onChangeText={setSpecies}
-              placeholder="e.g., Dog, Cat"
-              placeholderTextColor="#9CA3AF"
-              autoCapitalize="words"
-            />
-          </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Breed</Text>
-            <TextInput
-              style={styles.input}
-              value={breed}
-              onChangeText={setBreed}
-              placeholder="e.g., Golden Retriever"
-              placeholderTextColor="#9CA3AF"
-              autoCapitalize="words"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Birth Date</Text>
-            <TouchableOpacity
-              style={styles.dateButton}
-              onPress={() => setShowDatePicker(true)}
-            >
-              <Text style={birthDate ? styles.dateButtonTextFilled : styles.dateButtonText}>
-                {birthDate ? birthDate.toLocaleDateString() : 'Select birth date'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={birthDate || new Date()}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, selectedDate) => {
-                setShowDatePicker(Platform.OS === 'ios');
-                if (selectedDate) {
-                  setBirthDate(selectedDate);
-                }
-              }}
-              maximumDate={new Date()}
-            />
-          )}
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Weight (kg)</Text>
-            <TextInput
-              style={styles.input}
-              value={weight}
-              onChangeText={setWeight}
-              placeholder="e.g., 25.5"
-              keyboardType="decimal-pad"
-              placeholderTextColor="#9CA3AF"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Color</Text>
-            <TextInput
-              style={styles.input}
-              value={color}
-              onChangeText={setColor}
-              placeholder="e.g., Golden"
-              placeholderTextColor="#9CA3AF"
-              autoCapitalize="words"
-            />
-          </View>
         </View>
 
         <View style={styles.actions}>
@@ -290,20 +203,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
   },
-  dateButton: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
-  dateButtonText: {
-    fontSize: 16,
-    color: '#9CA3AF',
-  },
-  dateButtonTextFilled: {
-    fontSize: 16,
-    color: '#1F2937',
-  },
+
 });
