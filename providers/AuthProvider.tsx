@@ -46,6 +46,7 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
       
       const user: User = { email };
       await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(user));
+      await AsyncStorage.setItem('hasSeenOnboarding', 'true');
       return user;
     },
     onSuccess: () => {

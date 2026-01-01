@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView,
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCareDaily } from '@/providers/CareDailyProvider';
-import { CareTask, TimeSlot, TaskType } from '@/types';
+import { CareTask, Pet, TimeSlot, TaskType } from '@/types';
 import * as Haptics from 'expo-haptics';
 import { Colors } from '@/constants/colors';
 
@@ -20,9 +20,10 @@ const TIME_SLOTS: TimeSlot[] = ['Morning', 'Noon', 'Evening', 'Bedtime'];
 export default function AddTaskScreen() {
   const insets = useSafeAreaInsets();
   const { petId } = useLocalSearchParams<{ petId?: string }>();
-  const { addTask, pets } = useCareDaily();
+  const { addTask, addPet, pets } = useCareDaily();
   
   const [selectedPetId, setSelectedPetId] = useState<string>(petId || '');
+  const [newPetName, setNewPetName] = useState('');
   const [taskName, setTaskName] = useState('');
   const [taskType, setTaskType] = useState<TaskType>('medication');
   const [timeSlot, setTimeSlot] = useState<TimeSlot>('Morning');
@@ -41,15 +42,30 @@ export default function AddTaskScreen() {
       return;
     }
 
-    if (!selectedPetId) {
+    let petIdToUse = selectedPetId;
+
+    if (pets.length === 0) {
+      if (!newPetName.trim()) {
+        Alert.alert('Missing Information', 'Please enter a pet name.');
+        return;
+      }
+
+      const newPet: Pet = {
+        id: Date.now().toString(),
+        name: newPetName.trim(),
+      };
+
+      await addPet(newPet);
+      petIdToUse = newPet.id;
+    } else if (!petIdToUse) {
       Alert.alert('Missing Information', 'Please select a pet.');
       return;
     }
 
     const today = new Date().toISOString().split('T')[0];
     const newTask: CareTask = {
-      id: Date.now().toString(),
-      petId: selectedPetId,
+      id: (Date.now() + 1).toString(),
+      petId: petIdToUse,
       taskName: taskName.trim(),
       taskType,
       timeSlot,
@@ -118,7 +134,14 @@ export default function AddTaskScreen() {
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Pet *</Text>
             {pets.length === 0 ? (
-              <Text style={styles.noPetsText}>No pets available. Add a pet first.</Text>
+              <TextInput
+                style={styles.input}
+                value={newPetName}
+                onChangeText={setNewPetName}
+                placeholder="Enter your pet's name"
+                placeholderTextColor="#9CA3AF"
+                autoCapitalize="words"
+              />
             ) : (
               <View style={styles.petSelector}>
                 {pets.map((pet) => (
@@ -210,9 +233,8 @@ export default function AddTaskScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.saveButton, pets.length === 0 && styles.saveButtonDisabled]}
+            style={styles.saveButton}
             onPress={handleSave}
-            disabled={pets.length === 0}
           >
             <Text style={styles.saveButtonText}>Add Task</Text>
           </TouchableOpacity>

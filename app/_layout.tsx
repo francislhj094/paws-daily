@@ -6,7 +6,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { CareDailyProvider } from "@/providers/CareDailyProvider";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import * as Notifications from 'expo-notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { trpc, trpcClient } from "@/lib/trpc";
 
 SplashScreen.preventAutoHideAsync();
@@ -30,20 +29,17 @@ function RootLayoutNav() {
   const { isAuthenticated, isReady: authReady } = useAuth();
 
   useEffect(() => {
-    const checkOnboarding = async () => {
-      const hasSeenOnboarding = await AsyncStorage.getItem('hasSeenOnboarding');
+    const checkAuth = async () => {
       setIsReady(true);
       
       if (!authReady) return;
       
       if (!isAuthenticated && segments[0] !== 'login' && segments[0] !== 'signup') {
         router.replace('/login' as any);
-      } else if (isAuthenticated && !hasSeenOnboarding && segments[0] !== 'onboarding') {
-        router.replace('/onboarding');
       }
     };
     
-    checkOnboarding();
+    checkAuth();
   }, [router, segments, isAuthenticated, authReady]);
 
   if (!isReady || !authReady) {
@@ -54,7 +50,7 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerBackTitle: "Back" }}>
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="signup" options={{ headerShown: false }} />
-      <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen 
         name="add-pet" 

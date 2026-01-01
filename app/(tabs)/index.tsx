@@ -66,17 +66,17 @@ export default function TodaysCareScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {pets.length === 0 ? (
+        {pets.length === 0 || (incompleteTasks.length === 0 && completedTasks.length === 0) ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyIcon}>🐾</Text>
-            <Text style={styles.emptyTitle}>No pets yet</Text>
-            <Text style={styles.emptyText}>Add your first pet to start tracking their daily care</Text>
-          </View>
-        ) : incompleteTasks.length === 0 && completedTasks.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>📋</Text>
-            <Text style={styles.emptyTitle}>No tasks yet</Text>
-            <Text style={styles.emptyText}>Tap the + button below to add your first care task</Text>
+            <Text style={styles.emptyTitle}>Welcome to Paws Daily!</Text>
+            <Text style={styles.emptyText}>Tap + to add your first care task</Text>
+            <TouchableOpacity
+              style={styles.emptyStateButton}
+              onPress={() => router.push('/add-task')}
+            >
+              <Plus size={32} color={Colors.textLight} strokeWidth={3} />
+            </TouchableOpacity>
           </View>
         ) : incompleteTasks.length === 0 ? (
           <View style={styles.emptyState}>
@@ -380,6 +380,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 40,
     lineHeight: 24,
+    marginBottom: 32,
+  },
+  emptyStateButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.primaryAction,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: Colors.primaryAction,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
   fab: {
     position: 'absolute',
