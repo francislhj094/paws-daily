@@ -5,20 +5,9 @@ import React, { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { CareDailyProvider } from "@/providers/CareDailyProvider";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
-import * as Notifications from 'expo-notifications';
 import { trpc, trpcClient } from "@/lib/trpc";
 
 SplashScreen.preventAutoHideAsync();
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
 
 const queryClient = new QueryClient();
 
@@ -74,12 +63,6 @@ function RootLayoutNav() {
 export default function RootLayout() {
   useEffect(() => {
     SplashScreen.hideAsync();
-    
-    const requestPermissions = async () => {
-      const { status } = await Notifications.requestPermissionsAsync();
-      console.log('Notification permission status:', status);
-    };
-    requestPermissions();
   }, []);
 
   return (
