@@ -66,31 +66,7 @@ function RootLayoutNav() {
           title: "Add Care Task"
         }} 
       />
-      <Stack.Screen 
-        name="pet/[id]" 
-        options={{ 
-          title: "Pet Details"
-        }} 
-      />
-      <Stack.Screen 
-        name="medication/[id]" 
-        options={{ 
-          title: "Medication Details"
-        }} 
-      />
-      <Stack.Screen 
-        name="history" 
-        options={{ 
-          title: "History"
-        }} 
-      />
-      <Stack.Screen 
-        name="scan-barcode" 
-        options={{ 
-          title: "Scan Barcode",
-          presentation: "modal"
-        }} 
-      />
+
     </Stack>
   );
 }
