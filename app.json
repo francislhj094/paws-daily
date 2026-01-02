@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "rork-app",
+    "scheme": "launchfast-app",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "launchfast.pawsdaily",
+      "bundleIdentifier": "co.launchfast.pawsdaily",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos",
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera",
@@ -45,7 +45,7 @@
       [
         "expo-router",
         {
-          "origin": "https://rork.com/"
+          "origin": "https://launchfast.com/"
         }
       ],
       "expo-font",
