@@ -32,8 +32,8 @@ export default function SignUpScreen() {
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       await signup({ email, password });
-    } catch {
-      Alert.alert('Error', 'Failed to create account. Please try again.');
+    } catch (error: any) {
+      Alert.alert('Signup Failed', error?.message || 'Failed to create account. Please try again.');
     }
   };
 

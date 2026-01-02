@@ -21,8 +21,8 @@ export default function LoginScreen() {
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       await login({ email, password });
-    } catch {
-      Alert.alert('Error', 'Failed to log in. Please try again.');
+    } catch (error: any) {
+      Alert.alert('Login Failed', error?.message || 'Failed to log in. Please try again.');
     }
   };
 
