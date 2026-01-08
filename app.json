@@ -65,8 +65,7 @@
         }
       ],
       [
-        "expo-notifications",
-        [
+[
 "expo-notifications",
 {
   "color": "#ffffff",
