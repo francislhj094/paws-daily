@@ -14,7 +14,7 @@ export default function SignUpScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSignUp = async () => {
-    if (!email || !password || !confirmPassword) {
+    if (!email.trim() || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -29,10 +29,19 @@ export default function SignUpScreen() {
       return;
     }
 
+    if (isSigningUp) {
+      console.log('Signup already in progress, ignoring');
+      return;
+    }
+
+    console.log('handleSignUp called');
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      await signup({ email, password });
+      await signup({ email: email.trim(), password });
+      console.log('Signup completed successfully');
     } catch (error: any) {
+      console.log('Signup caught error:', error?.message);
       Alert.alert('Signup Failed', error?.message || 'Failed to create account. Please try again.');
     }
   };

@@ -13,15 +13,24 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    if (!email.trim() || !password) {
       Alert.alert('Error', 'Please enter both email and password');
       return;
     }
 
+    if (isLoggingIn) {
+      console.log('Login already in progress, ignoring');
+      return;
+    }
+
+    console.log('handleLogin called');
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      await login({ email, password });
+      await login({ email: email.trim(), password });
+      console.log('Login completed successfully');
     } catch (error: any) {
+      console.log('Login caught error:', error?.message);
       Alert.alert('Login Failed', error?.message || 'Failed to log in. Please try again.');
     }
   };

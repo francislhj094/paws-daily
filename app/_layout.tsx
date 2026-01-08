@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { CareDailyProvider } from "@/providers/CareDailyProvider";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
@@ -12,26 +12,31 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
-  const [isReady, setIsReady] = useState(false);
   const router = useRouter();
   const segments = useSegments();
   const { isAuthenticated, isReady: authReady } = useAuth();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      setIsReady(true);
-      
-      if (!authReady) return;
-      
-      if (!isAuthenticated && segments[0] !== 'login' && segments[0] !== 'signup') {
-        router.replace('/login' as any);
-      }
-    };
-    
-    checkAuth();
-  }, [router, segments, isAuthenticated, authReady]);
+    if (!authReady) {
+      console.log('Auth not ready yet');
+      return;
+    }
 
-  if (!isReady || !authReady) {
+    const currentSegment = segments[0];
+    const isOnAuthScreen = currentSegment === 'login' || currentSegment === 'signup';
+    
+    console.log('Auth check - authenticated:', isAuthenticated, 'segment:', currentSegment);
+
+    if (!isAuthenticated && !isOnAuthScreen) {
+      console.log('Not authenticated, redirecting to login');
+      router.replace('/login' as any);
+    } else if (isAuthenticated && isOnAuthScreen) {
+      console.log('Already authenticated, redirecting to tabs');
+      router.replace('/(tabs)' as any);
+    }
+  }, [isAuthenticated, authReady, segments, router]);
+
+  if (!authReady) {
     return null;
   }
 

@@ -37,9 +37,16 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
   const userQuery = useQuery({
     queryKey: ['user'],
     queryFn: async (): Promise<User | null> => {
-      const stored = await AsyncStorage.getItem(AUTH_KEY);
-      return stored ? JSON.parse(stored) : null;
+      try {
+        const stored = await AsyncStorage.getItem(AUTH_KEY);
+        return stored ? JSON.parse(stored) : null;
+      } catch (error) {
+        console.log('Error loading user from storage:', error);
+        return null;
+      }
     },
+    retry: false,
+    staleTime: Infinity,
   });
 
   useEffect(() => {
@@ -50,13 +57,15 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
 
   const loginMutation = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log('Login attempt for:', email);
 
       if (!validateEmail(email)) {
         throw new Error('Please enter a valid email address');
       }
 
       const users = await getStoredUsers();
+      console.log('Found registered users:', users.length);
+      
       const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
       if (!user) {
@@ -69,17 +78,22 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
 
       const authUser: User = { email: user.email };
       await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(authUser));
+      console.log('Login successful for:', email);
       return authUser;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user'] });
+    onSuccess: (data) => {
+      console.log('Login onSuccess, navigating to tabs');
+      queryClient.setQueryData(['user'], data);
       router.replace('/(tabs)' as any);
+    },
+    onError: (error) => {
+      console.log('Login error:', error.message);
     },
   });
 
   const signupMutation = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log('Signup attempt for:', email);
 
       if (!validateEmail(email)) {
         throw new Error('Please enter a valid email address');
@@ -90,6 +104,8 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
       }
 
       const users = await getStoredUsers();
+      console.log('Existing users count:', users.length);
+      
       const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
       if (existingUser) {
@@ -103,22 +119,32 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
       const authUser: User = { email };
       await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(authUser));
       await AsyncStorage.setItem('hasSeenOnboarding', 'true');
+      console.log('Signup successful for:', email);
       return authUser;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user'] });
+    onSuccess: (data) => {
+      console.log('Signup onSuccess, navigating to tabs');
+      queryClient.setQueryData(['user'], data);
       router.replace('/(tabs)' as any);
+    },
+    onError: (error) => {
+      console.log('Signup error:', error.message);
     },
   });
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
+      console.log('Logout initiated');
       await AsyncStorage.removeItem(AUTH_KEY);
       return null;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user'] });
+      console.log('Logout successful');
+      queryClient.setQueryData(['user'], null);
       router.replace('/login' as any);
+    },
+    onError: (error) => {
+      console.log('Logout error:', error);
     },
   });
 
