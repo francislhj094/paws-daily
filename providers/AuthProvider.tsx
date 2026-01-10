@@ -148,6 +148,39 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
     },
   });
 
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      console.log('Delete account initiated');
+      const currentUser = userQuery.data;
+      if (!currentUser) {
+        throw new Error('No user logged in');
+      }
+
+      const users = await getStoredUsers();
+      const updatedUsers = users.filter(
+        u => u.email.toLowerCase() !== currentUser.email.toLowerCase()
+      );
+      await saveStoredUsers(updatedUsers);
+
+      await AsyncStorage.removeItem(AUTH_KEY);
+      
+      const petsKey = `pets_${currentUser.email}`;
+      const tasksKey = `tasks_${currentUser.email}`;
+      await AsyncStorage.multiRemove([petsKey, tasksKey]);
+      
+      console.log('Account deleted for:', currentUser.email);
+      return null;
+    },
+    onSuccess: () => {
+      console.log('Account deletion successful');
+      queryClient.clear();
+      router.replace('/login' as any);
+    },
+    onError: (error) => {
+      console.log('Delete account error:', error);
+    },
+  });
+
   return {
     user: userQuery.data ?? null,
     isAuthenticated: !!userQuery.data,
@@ -155,8 +188,10 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
     login: loginMutation.mutateAsync,
     signup: signupMutation.mutateAsync,
     logout: logoutMutation.mutateAsync,
+    deleteAccount: deleteAccountMutation.mutateAsync,
     isLoggingIn: loginMutation.isPending,
     isSigningUp: signupMutation.isPending,
     isLoggingOut: logoutMutation.isPending,
+    isDeletingAccount: deleteAccountMutation.isPending,
   };
 });

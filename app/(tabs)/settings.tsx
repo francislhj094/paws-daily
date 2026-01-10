@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
-import { RotateCcw, Info, ChevronRight, LogOut } from 'lucide-react-native';
+import { RotateCcw, Info, ChevronRight, LogOut, Trash2 } from 'lucide-react-native';
 import { useCareDaily } from '@/providers/CareDailyProvider';
 import { useAuth } from '@/providers/AuthProvider';
 import { Colors } from '@/constants/colors';
@@ -10,7 +10,7 @@ import { Colors } from '@/constants/colors';
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { pets, tasks, resetTodayTasks } = useCareDaily();
-  const { logout, user } = useAuth();
+  const { logout, user, deleteAccount, isDeletingAccount } = useAuth();
 
   const handleResetTasks = () => {
     Alert.alert(
@@ -56,6 +56,40 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to permanently delete your account? This action cannot be undone and all your data (pets, tasks, and settings) will be permanently removed.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Account',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Confirm Deletion',
+              'This is your final confirmation. Your account and all associated data will be permanently deleted.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Yes, Delete My Account',
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      await deleteAccount();
+                    } catch {
+                      Alert.alert('Error', 'Failed to delete account. Please try again.');
+                    }
+                  },
+                },
+              ]
+            );
+          },
+        },
+      ]
+    );
+  };
+
   const todayTasks = tasks.filter(task => {
     const today = new Date().toISOString().split('T')[0];
     return task.createdDate === today;
@@ -87,6 +121,20 @@ export default function SettingsScreen() {
               <View style={styles.settingLeft}>
                 <LogOut size={22} color="#EF4444" />
                 <Text style={[styles.settingLabel, { color: '#EF4444' }]}>Log Out</Text>
+              </View>
+              <ChevronRight size={22} color="#9CA3AF" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.settingItem, styles.deleteItem]}
+              onPress={handleDeleteAccount}
+              disabled={isDeletingAccount}
+            >
+              <View style={styles.settingLeft}>
+                <Trash2 size={22} color="#DC2626" />
+                <Text style={[styles.settingLabel, { color: '#DC2626' }]}>
+                  {isDeletingAccount ? 'Deleting...' : 'Delete Account'}
+                </Text>
               </View>
               <ChevronRight size={22} color="#9CA3AF" />
             </TouchableOpacity>
@@ -225,5 +273,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.textSecondary,
     fontWeight: '500',
+  },
+  deleteItem: {
+    borderWidth: 1,
+    borderColor: '#FEE2E2',
+    backgroundColor: '#FEF2F2',
   },
 });
